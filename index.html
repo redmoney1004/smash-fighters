@@ -1163,8 +1163,21 @@
 
   #acc-result-line { margin: -6px 0 18px; font-size: 16px; font-weight: 900; color: #dfe4ea; text-shadow: 0 2px 0 #000; min-height: 22px; animation: csColIn 0.4s ease-out both; }
   /* ===== 캐릭터 7장(랜덤 포함) 한 줄 배치 / 랜덤 카드 ===== */
-  .cs-cards { gap: 10px; }
+  .cs-cards { gap: 10px; flex-wrap: wrap; }
   .cs-card { width: 118px; }
+  /* 두 줄 카드 + 화면 높이에 맞춘 컴팩트 크기 */
+  .cs-cards { gap: 8px 10px; padding-top: 4px; }
+  .cs-card { padding: 5px 6px 5px; }
+  .cs-card .thumb { width: 58px; height: 46px; margin-bottom: 2px; }
+  .cs-card .thumb img { max-height: 42px !important; }
+  .cs-card .char-name { font-size: 14px; line-height: 1.15; }
+  .cs-card .char-role { font-size: 10px; line-height: 1.2; }
+  .cs-card.rand .thumb .dice { font-size: 28px; }
+  .cs-stage { width: 328px; height: 180px; }
+  .cs-stage.small { height: 165px; }
+  .cs-stage.solo { width: 400px; height: 215px; }
+  #mp-select-screen .cs-stage { width: 290px; height: 159px; }
+  #mp-select-screen.cs-screen { gap: 6px; }
   .cs-card.rand .thumb .dice { font-size: 36px; display: inline-block; animation: csDice 2.2s ease-in-out infinite; }
   .cs-card.rand { border-style: dashed; }
   @keyframes csDice { 0%,100% { transform: rotate(-14deg) scale(1); } 50% { transform: rotate(14deg) scale(1.15); } }
@@ -1318,7 +1331,7 @@
 
   <!-- 캐릭터 및 맵 선택 화면 -->
   <div id="select-screen" class="screen cs-screen hidden">
-    <div class="cs-title sm">캐릭터 &amp; 맵 선택 (2인 대전)</div>
+    <div class="cs-title sm" id="select-title">캐릭터 &amp; 맵 선택 (2인 대전)</div>
     <div class="cs-stages">
       <div class="cs-stage p1">
         <span class="cs-tag">1P (왼쪽)</span>
@@ -2793,6 +2806,9 @@ function csThumb(char) {
 function buildCardRow(container, sels, onPick, onAlt) {
   container.innerHTML = '';
   const entries = CHARACTERS.map((c, i) => ({ idx: i, char: c })).concat([{ idx: RANDOM_IDX, char: RANDOM_INFO }]);
+  // 캐릭터가 많아지면 화면 밖으로 나가지 않도록 두 줄로 배치
+  container.style.maxWidth = (Math.ceil(entries.length / 2) * 128 + 12) + 'px';
+  container.style.margin = '0 auto';
   entries.forEach(({ idx, char }, order) => {
     const card = document.createElement('div');
     card.className = 'cs-card' + (idx === RANDOM_IDX ? ' rand' : '');
@@ -3145,6 +3161,7 @@ document.querySelectorAll('.ai-diff-btn').forEach(btn => btn.addEventListener('c
     gameState = 'SELECT';
     trainingMode = false;
     aiMode = true;
+    document.getElementById('select-title').innerHTML = '캐릭터 &amp; 맵 선택 (1인 플레이)';
     initSelectScreen();
   });
 }));
@@ -3158,6 +3175,7 @@ document.getElementById('btn-mode-2p').addEventListener('click', () => {
     modeScreen.classList.add('hidden');
     selectScreen.classList.remove('hidden');
     gameState = 'SELECT';
+    document.getElementById('select-title').innerHTML = '캐릭터 &amp; 맵 선택 (2인 대전)';
     initSelectScreen();
   });
 });
